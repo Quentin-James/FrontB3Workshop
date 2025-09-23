@@ -72,20 +72,19 @@
       </div>
     </div>
   </section>
-<!-- Export & Daily Summary Section -->
-<section class="data-actions">
-  <div class="action-card">
-    <h4>Export Sensor Data</h4>
-    <p>Export the last 20 readings to a JSON file.</p>
-    <button class="btn export-btn" (click)="exportData()">Export JSON</button>
-  </div>
 
-  <div class="action-card">
-    <h4>Daily Summary</h4>
-    <p>Generate a daily summary of Temperature, Humidity, and Luminosity.</p>
-    <button class="btn summary-btn" (click)="generateDailySummary()">Generate Summary</button>
-  </div>
-</section>
+  <!-- Export & Daily Summary Buttons -->
+ <section class="export-summary">
+    <div class="export-card">
+      <h4>Export Sensor Data</h4>
+      <p>Export the last 20 readings in JSON format, point by point.</p>
+      <button (click)="exportData()" class="btn-export">Export JSON</button>
+    </div>
 
-
+    <div class="summary-card">
+      <h4>Daily Summary</h4>
+      <p>Generate a daily summary file (.txt) with averages, min, max.</p>
+      <button (click)="generateDailySummary()" class="btn-summary">Generate TXT</button>
+    </div>
+  </section>
 </main>
