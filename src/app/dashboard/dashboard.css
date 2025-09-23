@@ -164,55 +164,57 @@
   margin-top: 2rem;
 }
 
-.action-card {
-  flex: 1;
-  min-width: 200px;
-  background-color: #f3f4f6;
-  border-radius: 0.75rem;
-  padding: 1rem 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+.export-summary {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
+  gap: 2rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
 }
 
-.action-card h4 {
-  margin: 0;
-  font-size: 1.1rem;
+.export-card, .summary-card {
+  flex: 1;
+  min-width: 250px;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.export-card h4, .summary-card h4 {
+  margin-bottom: 0.5rem;
   font-weight: 700;
   font-family: 'Roboto', sans-serif;
 }
 
-.action-card p {
-  font-size: 0.9rem;
+.export-card p, .summary-card p {
+  font-size: 0.85rem;
   color: #4b5563;
-  margin: 0.2rem 0 1rem;
+  margin-bottom: 1rem;
 }
 
-/* Buttons */
-.btn {
-  padding: 0.5rem 1rem;
+.btn-export, .btn-summary {
+  padding: 0.5rem 1.5rem;
   border: none;
   border-radius: 0.5rem;
   color: white;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
-.export-btn {
+.btn-export {
   background-color: #3b82f6;
 }
 
-.export-btn:hover {
+.btn-export:hover {
   background-color: #2563eb;
 }
 
-.summary-btn {
+.btn-summary {
   background-color: #10b981;
 }
 
-.summary-btn:hover {
+.btn-summary:hover {
   background-color: #059669;
 }
