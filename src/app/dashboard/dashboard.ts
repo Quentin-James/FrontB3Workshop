@@ -155,6 +155,46 @@ export class Dashboard implements OnInit {
     if (this.humChart) this.humChart.update();
   }
 
+  // Export JSON format point-by-point
+  exportData() {
+    const lines = this.timeLabels.map((time, i) => {
+      return `${time} ; ${this.tempData[i].toFixed(1)}°C ; ${this.humData[i].toFixed(1)}% ; ${this.lumData[i].toFixed(1)} lux`;
+    });
+    const blob = new Blob([lines.join('\n')], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sensor_data.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // Daily Summary in .txt
+  generateDailySummary() {
+    if (!this.tempData.length) return;
+
+    const avgTemp = (this.tempData.reduce((a, b) => a + b, 0) / this.tempData.length).toFixed(1);
+    const avgHum = (this.humData.reduce((a, b) => a + b, 0) / this.humData.length).toFixed(1);
+    const avgLum = (this.lumData.reduce((a, b) => a + b, 0) / this.lumData.length).toFixed(1);
+
+    const summary = `
+Daily Summary - ${new Date().toLocaleDateString()}
+
+Temperature: Avg ${avgTemp}°C | Min ${this.minTemp}°C | Max ${this.maxTemp}°C
+Humidity:    Avg ${avgHum}%  | Min ${this.minHum}%  | Max ${this.maxHum}%
+Luminosity:  Avg ${avgLum} lux | Min ${this.minLum} lux | Max ${this.maxLum} lux
+Number of readings: ${this.timeLabels.length}
+`;
+
+    const blob = new Blob([summary], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `daily_summary_${new Date().toLocaleDateString()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   // Min / Max getters
   get maxTemp() { return this.tempData.length ? Math.max(...this.tempData) : 0; }
   get minTemp() { return this.tempData.length ? Math.min(...this.tempData) : 0; }
@@ -162,42 +202,4 @@ export class Dashboard implements OnInit {
   get minHum() { return this.humData.length ? Math.min(...this.humData) : 0; }
   get maxLum() { return this.lumData.length ? Math.max(...this.lumData) : 0; }
   get minLum() { return this.lumData.length ? Math.min(...this.lumData) : 0; }
-
-  // Export JSON
-  exportData() {
-    const data = {
-      temperature: this.tempData,
-      humidity: this.humData,
-      luminosity: this.lumData,
-      time: this.timeLabels
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'sensor_data.json';
-    a.click();
-    window.URL.revokeObjectURL(url);
-  }
-
-  // Daily summary
-  generateDailySummary() {
-    if (!this.tempData.length || !this.humData.length || !this.lumData.length) return;
-
-    const summary = {
-      date: new Date().toLocaleDateString(),
-      avgTemp: (this.tempData.reduce((a, b) => a + b, 0) / this.tempData.length).toFixed(1),
-      minTemp: this.minTemp,
-      maxTemp: this.maxTemp,
-      avgHum: (this.humData.reduce((a, b) => a + b, 0) / this.humData.length).toFixed(1),
-      minHum: this.minHum,
-      maxHum: this.maxHum,
-      avgLum: (this.lumData.reduce((a, b) => a + b, 0) / this.lumData.length).toFixed(1),
-      minLum: this.minLum,
-      maxLum: this.maxLum
-    };
-
-    console.log('Daily Summary:', summary);
-    alert('Daily summary generated! Check console for details.');
-  }
 }
