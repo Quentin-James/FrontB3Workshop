@@ -174,3 +174,4 @@ export class Dashboard implements OnInit {
   get maxLum() { return this.lumData.length ? Math.max(...this.lumData) : 0; }
   get minLum() { return this.lumData.length ? Math.min(...this.lumData) : 0; }
 }
+//dfdff
