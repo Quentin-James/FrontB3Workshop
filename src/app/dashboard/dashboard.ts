@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 
-
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -33,7 +32,6 @@ export class Dashboard implements OnInit {
   tempChartOptions: ChartOptions<'line'> = {};
   humChartOptions: ChartOptions<'line'> = {};
 
-  // Options de base communes
   baseChartOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -71,7 +69,6 @@ export class Dashboard implements OnInit {
       }
     ];
 
-    // Initialisation des options pour chaque graphique
     this.tempChartOptions = { ...this.baseChartOptions };
     this.humChartOptions = { ...this.baseChartOptions };
 
@@ -82,7 +79,6 @@ export class Dashboard implements OnInit {
     const now = new Date();
     this.lastUpdate = now;
 
-    // Simulation de nouvelles valeurs
     this.temperature = 28 + Math.random() * 10;
     this.humidity = 40 + Math.random() * 30;
     this.luminosity = 100 + Math.random() * 200;
@@ -100,22 +96,18 @@ export class Dashboard implements OnInit {
     this.humData.push(this.humidity);
     this.lumData.push(this.luminosity);
 
-    // Min/Max dynamiques par graphique
     const tempMin = Math.min(...this.tempData) * 0.9;
     const tempMax = Math.max(...this.tempData) * 1.1;
     const humMin = Math.min(...this.humData) * 0.9;
     const humMax = Math.max(...this.humData) * 1.1;
 
-    // Mise à jour des options individuelles
     this.tempChartOptions = {
       ...this.baseChartOptions,
       scales: {
         x: { type: 'category', title: { display: true, text: 'Time' } },
         y: { beginAtZero: false, suggestedMin: tempMin, suggestedMax: tempMax, title: { display: true, text: 'Temp (°C)' } }
-      }, animation: {
-    duration: 500, // ms
-    easing: 'linear' // glisse linéaire
-  }
+      },
+      animation: { duration: 500, easing: 'linear' }
     };
 
     this.humChartOptions = {
@@ -123,13 +115,10 @@ export class Dashboard implements OnInit {
       scales: {
         x: { type: 'category', title: { display: true, text: 'Time' } },
         y: { beginAtZero: false, suggestedMin: humMin, suggestedMax: humMax, title: { display: true, text: 'Humidité (%)' } }
-      }, animation: {
-    duration: 500, // ms
-    easing: 'linear' // glisse linéaire
-  }
+      },
+      animation: { duration: 500, easing: 'linear' }
     };
 
-    // Mise à jour des datasets
     this.tempChartData = {
       labels: [...this.timeLabels],
       datasets: [
@@ -173,5 +162,42 @@ export class Dashboard implements OnInit {
   get minHum() { return this.humData.length ? Math.min(...this.humData) : 0; }
   get maxLum() { return this.lumData.length ? Math.max(...this.lumData) : 0; }
   get minLum() { return this.lumData.length ? Math.min(...this.lumData) : 0; }
+
+  // Export JSON
+  exportData() {
+    const data = {
+      temperature: this.tempData,
+      humidity: this.humData,
+      luminosity: this.lumData,
+      time: this.timeLabels
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sensor_data.json';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  // Daily summary
+  generateDailySummary() {
+    if (!this.tempData.length || !this.humData.length || !this.lumData.length) return;
+
+    const summary = {
+      date: new Date().toLocaleDateString(),
+      avgTemp: (this.tempData.reduce((a, b) => a + b, 0) / this.tempData.length).toFixed(1),
+      minTemp: this.minTemp,
+      maxTemp: this.maxTemp,
+      avgHum: (this.humData.reduce((a, b) => a + b, 0) / this.humData.length).toFixed(1),
+      minHum: this.minHum,
+      maxHum: this.maxHum,
+      avgLum: (this.lumData.reduce((a, b) => a + b, 0) / this.lumData.length).toFixed(1),
+      minLum: this.minLum,
+      maxLum: this.maxLum
+    };
+
+    console.log('Daily Summary:', summary);
+    alert('Daily summary generated! Check console for details.');
+  }
 }
-//dfdff

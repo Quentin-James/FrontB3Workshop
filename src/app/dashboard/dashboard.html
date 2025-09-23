@@ -44,33 +44,48 @@
 
   <!-- Graphs -->
   <section class="charts">
-  <div class="chart-card">
-    <div class="chart-header">
-      <h3>Temperature History</h3>
-      <small>Last 20 readings</small>
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Temperature History</h3>
+        <small>Last 20 readings</small>
+      </div>
+      <div class="chart-container">
+        <canvas baseChart
+                [data]="tempChartData"
+                [options]="tempChartOptions"
+                [type]="'line'">
+        </canvas>
+      </div>
     </div>
-    <div class="chart-container">
-      <canvas baseChart
-              [data]="tempChartData"
-              [options]="tempChartOptions"
-              [type]="'line'">
-      </canvas>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Humidity History</h3>
+        <small>Last 20 readings</small>
+      </div>
+      <div class="chart-container">
+        <canvas baseChart
+                [data]="humChartData"
+                [options]="humChartOptions"
+                [type]="'line'">
+        </canvas>
+      </div>
     </div>
+  </section>
+<!-- Export & Daily Summary Section -->
+<section class="data-actions">
+  <div class="action-card">
+    <h4>Export Sensor Data</h4>
+    <p>Export the last 20 readings to a JSON file.</p>
+    <button class="btn export-btn" (click)="exportData()">Export JSON</button>
   </div>
 
-  <div class="chart-card">
-    <div class="chart-header">
-      <h3>Humidity History</h3>
-      <small>Last 20 readings</small>
-    </div>
-    <div class="chart-container">
-      <canvas baseChart
-              [data]="humChartData"
-              [options]="humChartOptions"
-              [type]="'line'">
-      </canvas>
-    </div>
+  <div class="action-card">
+    <h4>Daily Summary</h4>
+    <p>Generate a daily summary of Temperature, Humidity, and Luminosity.</p>
+    <button class="btn summary-btn" (click)="generateDailySummary()">Generate Summary</button>
   </div>
 </section>
+
 
 </main>

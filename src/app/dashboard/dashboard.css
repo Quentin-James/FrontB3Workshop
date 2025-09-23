@@ -155,3 +155,64 @@
 .chart-container {
   height: 300px; 
 }
+
+/* Section Export & Summary */
+.data-actions {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.action-card {
+  flex: 1;
+  min-width: 200px;
+  background-color: #f3f4f6;
+  border-radius: 0.75rem;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.action-card h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: 'Roboto', sans-serif;
+}
+
+.action-card p {
+  font-size: 0.9rem;
+  color: #4b5563;
+  margin: 0.2rem 0 1rem;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.export-btn {
+  background-color: #3b82f6;
+}
+
+.export-btn:hover {
+  background-color: #2563eb;
+}
+
+.summary-btn {
+  background-color: #10b981;
+}
+
+.summary-btn:hover {
+  background-color: #059669;
+}
