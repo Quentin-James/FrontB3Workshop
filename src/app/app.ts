@@ -1,17 +1,19 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { Dashboard } from './dashboard/dashboard';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { LoginComponent } from './auth/login/login.component';
+import { Dashboard } from './dashboard/dashboard'; // ton dashboard standalone
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
-  styleUrl: './app.css',
-  template: `
-    <router-outlet></router-outlet>
-    
-  `
+  imports: [CommonModule, LoginComponent, Dashboard],
+  templateUrl: './app.html',
+  styleUrls: ['./app.css']
 })
-export class App {
-  protected readonly title = signal('FrontAgri');
+export class AppComponent {
+  isAuthenticated = false;
+
+  handleLoginSuccess() {
+    this.isAuthenticated = true;
+  }
 }
