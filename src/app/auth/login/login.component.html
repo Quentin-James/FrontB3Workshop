@@ -6,15 +6,17 @@
       <p class="subtitle">Raspberry Pi Sensor Monitor</p>
     </div>
 
-    <form (ngSubmit)="onLogin()" class="login-form">
+    <form (ngSubmit)="onLogin()" class="login-form" #loginForm="ngForm">
       <div class="form-group">
         <label for="username">👤 Username</label>
         <input
           type="text"
           id="username"
-          [(ngModel)]="username"
+          [value]="username()"
+          (input)="username.set($any($event.target).value)"
           name="username"
           required
+          [disabled]="isLoading()"
         />
       </div>
 
@@ -23,15 +25,29 @@
         <input
           type="password"
           id="password"
-          [(ngModel)]="password"
+          [value]="password()"
+          (input)="password.set($any($event.target).value)"
           name="password"
           required
+          [disabled]="isLoading()"
         />
       </div>
 
-      <button type="submit" class="btn-login">Login</button>
+      <button 
+        type="submit" 
+        [disabled]="!isFormValid() || isLoading()"
+        class="login-button"
+      >
+        @if (isLoading()) {
+          Connexion...
+        } @else {
+          Se connecter
+        }
+      </button>
 
-      <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+      @if (errorMessage()) {
+        <div class="error">{{ errorMessage() }}</div>
+      }
     </form>
   </div>
 </div>
