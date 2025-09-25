@@ -4,22 +4,20 @@ import { catchError, map, Observable, of } from 'rxjs';
 import { HTTPAuthBack } from '../Services/auth.backend';
 
 /**
- * Interface pour la réponse de connexion (non utilisée actuellement)
- * Pourrait être utilisée pour une authentification basée sur token
+ * Interface pour la réponse de connexion
+ * Note: Votre API retourne un status 200 vide, donc pas de contenu JSON
  */
 interface LoginResponse {
-  success: boolean;
-  token?: string;
+  success?: boolean;
   message?: string;
 }
 
 /**
- * Interface pour la requête de connexion (non utilisée actuellement)
- * Pourrait être utilisée pour typer les données d'entrée
+ * Interface pour la requête de connexion
  */
 interface LoginRequest {
-  username: string;
-  password: string;
+  mail: string;
+  mot_de_passe: string;
 }
 
 /**
@@ -56,51 +54,62 @@ export class AuthService {
   private readonly httpAuthBack = inject(HTTPAuthBack);
 
   /**
-   * Authentifie un utilisateur avec nom d'utilisateur et mot de passe
+   * Authentifie un utilisateur avec email et mot de passe
+   * Utilise l'endpoint POST /api/Authentification/login
    * @param username - L'email de l'utilisateur
    * @param password - Le mot de passe de l'utilisateur
    * @returns Observable<boolean> - true si l'authentification réussit, false sinon
    */
   login(username: string, password: string): Observable<boolean> {
-
+    // Log de la tentative de connexion (sans exposer le mot de passe)
+    console.log('Login attempt for user:', username);
     
-    // Construction des paramètres URL avec encodage pour éviter les problèmes de caractères spéciaux
-    const params = `?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
-    const fullUrl = `api/Authentification${params}`;
+    // Construction de l'objet de requête avec les bons champs
+    const loginRequest: LoginRequest = {
+      mail: username,
+      mot_de_passe: password
+    };
     
+    console.log('Sending login request to API...');
     
-    
-    // Appel HTTP GET pour récupérer la liste des utilisateurs
-    return this.httpAuthBack.get<UserResponse[]>(fullUrl)
+    // Appel POST pour authentifier l'utilisateur côté serveur
+    return this.httpAuthBack.post<any>('api/Authentification/login', loginRequest)
       .pipe(
-        // Transformation de la réponse pour vérifier l'authentification
-        map((users: UserResponse[]) => {
+        // Transformation de la réponse d'authentification
+        map((response: any) => {
+          console.log('Authentication response received:', response);
           
-          // Recherche d'un utilisateur correspondant aux identifiants fournis
-          const matchedUser = users.find(user => 
-            user.mail === username && user.mot_de_passe === password
-          );
+          // Si la réponse est un status 200 (succès), l'authentification a réussi
+          // Votre API retourne un status 200 vide, donc on considère que c'est un succès
+          console.log('User authenticated successfully');
           
-          if (matchedUser) {
-            
-            // Mise à jour du signal de connexion
-            this.loggedIn.set(true);
-            
-            // Sauvegarde de l'état de connexion dans le localStorage pour la persistance
-            localStorage.setItem('loggedIn', 'true');
-            localStorage.setItem('userId', matchedUser.id.toString());
-            
-            return true;
-          } else {
-            // Authentification échouée
-            console.log('Authentication failed - no matching user');
-            return false;
-          }
+          // Mise à jour du signal de connexion
+          this.loggedIn.set(true);
+          
+          // Sauvegarde sécurisée des informations de session
+          localStorage.setItem('loggedIn', 'true');
+          localStorage.setItem('userEmail', username);
+          
+          return true;
         }),
         // Gestion des erreurs HTTP
         catchError(error => {
           console.error('Login error:', error);
-          console.error('Error details:', error.error);
+          
+          // Log détaillé de l'erreur pour le débogage
+          if (error.status === 401) {
+            console.error('Unauthorized: Invalid credentials');
+          } else if (error.status === 400) {
+            console.error('Bad Request: Invalid request format');
+          } else if (error.status === 500) {
+            console.error('Server error during authentication');
+          } else {
+            console.error('Network or other error:', error.message);
+          }
+          
+          // S'assurer que l'état local reflète l'échec d'authentification
+          this.loggedIn.set(false);
+          
           // Retour d'un Observable avec false en cas d'erreur
           return of(false);
         })
@@ -133,15 +142,17 @@ export class AuthService {
   }
 
   /**
-   * Déconnecte l'utilisateur et nettoie les données d'authentification
+   * Déconnecte l'utilisateur et nettoie toutes les données d'authentification
    */
   logout(): void {
     // Mise à jour du signal de connexion
     this.loggedIn.set(false);
     
-    // Nettoyage du localStorage
+    // Nettoyage complet du localStorage
     localStorage.removeItem('loggedIn');
-    localStorage.removeItem('authToken'); // Note: 'userId' n'est pas supprimé
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('authToken');
     
     // Redirection vers la page de connexion
     this.router.navigate(['/login']);
@@ -155,5 +166,22 @@ export class AuthService {
   isLoggedIn(): boolean {
     // Vérifie d'abord le signal réactif, puis le localStorage comme fallback
     return this.loggedIn() || localStorage.getItem('loggedIn') === 'true';
+  }
+
+  /**
+   * Récupère l'email de l'utilisateur connecté
+   * @returns string | null - l'email de l'utilisateur ou null si non connecté
+   */
+  getCurrentUserEmail(): string | null {
+    return localStorage.getItem('userEmail');
+  }
+
+  /**
+   * Récupère l'ID de l'utilisateur connecté (si disponible)
+   * @returns number | null - l'ID de l'utilisateur ou null si non disponible
+   */
+  getCurrentUserId(): number | null {
+    const userId = localStorage.getItem('userId');
+    return userId ? parseInt(userId, 10) : null;
   }
 }
