@@ -7,9 +7,9 @@
     </div>
   </div>
   <div class="status">
-    <div class="wifi" [class.off]="!connected">●</div>
-    <div>{{ connected ? 'Connected' : 'Disconnected' }}</div>
-    <div class="last">Last update: {{ lastUpdate | date:'shortTime' }}</div>
+    <div class="wifi" [class.off]="!connected()">●</div>
+    <div>{{ connected() ? 'Connected' : 'Disconnected' }}</div>
+    <div class="last">Last update: {{ lastUpdate() | date:'shortTime' }}</div>
   </div>
 </header>
 
@@ -19,25 +19,41 @@
     <div class="card">
       <div class="icon">🌡️</div>
       <div class="label">Temperature</div>
-      <div class="value">{{ temperature | number:'1.1-1' }} °C</div>
+      <div class="value">{{ temperature() | number:'1.1-1' }} °C</div>
       <div class="minmax">
-        Min: {{ minTemp | number:'1.1-1' }} °C | Max: {{ maxTemp | number:'1.1-1' }} °C
+        Min: {{ tempStats().min | number:'1.1-1' }} °C | Max: {{ tempStats().max | number:'1.1-1' }} °C
       </div>
     </div>
     <div class="card">
       <div class="icon">💧</div>
       <div class="label">Humidity</div>
-      <div class="value">{{ humidity | number:'1.1-1' }} %</div>
+      <div class="value">{{ humidity() | number:'1.1-1' }} %</div>
       <div class="minmax">
-        Min: {{ minHum | number:'1.1-1' }} % | Max: {{ maxHum | number:'1.1-1' }} %
+        Min: {{ humStats().min | number:'1.1-1' }} % | Max: {{ humStats().max | number:'1.1-1' }} %
       </div>
     </div>
     <div class="card">
-      <div class="icon">☀️</div>
-      <div class="label">Luminosity</div>
-      <div class="value">{{ luminosity | number:'1.1-1' }} lux</div>
+      <div class="icon">🔥</div>
+      <div class="label">Gas</div>
+      <div class="value">{{ gas() ? 'Détecté' : 'Non détecté' }}</div>
       <div class="minmax">
-        Min: {{ minLum | number:'1.1-1' }} lux | Max: {{ maxLum | number:'1.1-1' }} lux
+        Statut: {{ gas() === 1 ? 'ON' : 'OFF' }}
+      </div>
+    </div>
+    <div class="card">
+      <div class="icon">💡</div>
+      <div class="label">Light</div>
+      <div class="value">{{ light() ? 'Allumée' : 'Éteinte' }}</div>
+      <div class="minmax">
+        Statut: {{ light() === 1 ? 'ON' : 'OFF' }}
+      </div>
+    </div>
+    <div class="card">
+      <div class="icon">💧</div>
+      <div class="label">Water</div>
+      <div class="value">{{ water() ? 'Détectée' : 'Non détectée' }}</div>
+      <div class="minmax">
+        Statut: {{ water() === 1 ? 'ON' : 'OFF' }}
       </div>
     </div>
   </section>
@@ -51,8 +67,9 @@
       </div>
       <div class="chart-container">
         <canvas baseChart
-                [data]="tempChartData"
-                [options]="tempChartOptions"
+                #tempChart
+                [data]="tempChartData()"
+                [options]="tempChartOptions()"
                 [type]="'line'">
         </canvas>
       </div>
@@ -65,8 +82,54 @@
       </div>
       <div class="chart-container">
         <canvas baseChart
-                [data]="humChartData"
-                [options]="humChartOptions"
+                #humChart
+                [data]="humChartData()"
+                [options]="humChartOptions()"
+                [type]="'line'">
+        </canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Gas Detection History</h3>
+        <small>Last 20 readings</small>
+      </div>
+      <div class="chart-container">
+        <canvas baseChart
+                #gasChart
+                [data]="gasChartData()"
+                [options]="gasChartOptions()"
+                [type]="'line'">
+        </canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Light Status History</h3>
+        <small>Last 20 readings</small>
+      </div>
+      <div class="chart-container">
+        <canvas baseChart
+                #lightChart
+                [data]="lightChartData()"
+                [options]="lightChartOptions()"
+                [type]="'line'">
+        </canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Water Detection History</h3>
+        <small>Last 20 readings</small>
+      </div>
+      <div class="chart-container">
+        <canvas baseChart
+                #waterChart
+                [data]="waterChartData()"
+                [options]="waterChartOptions()"
                 [type]="'line'">
         </canvas>
       </div>
